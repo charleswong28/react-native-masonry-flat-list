@@ -1,12 +1,12 @@
 {
-  "name": "react-native-masonry-flat-list",
-  "version": "1.2.3",
+  "name": "@charleswong28/react-native-masonry-flat-list",
+  "version": "1.2.4",
   "description": "React Native Masonry Flat List",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git@github.com:charleswong28/react-native-masonry-flat-list.git"
+    "url": "git+ssh://git@github.com/charleswong28/react-native-masonry-flat-list.git"
   },
   "bugs": {
     "url": "https://github.com/charleswong28/react-native-masonry-flat-list/issues"
@@ -34,5 +34,6 @@
     "tslint": "^5.8.0",
     "tslint-config-prettier": "^1.13.0",
     "typescript": "^3.7.4"
-  }
+  },
+  "homepage": "https://github.com/charleswong28/react-native-masonry-flat-list#readme"
 }
