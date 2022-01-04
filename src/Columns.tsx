@@ -219,7 +219,10 @@ function Columns<T>({
       onEndReached={onEndReached}
       removeClippedSubviews={true}
       {...columnsFlatListProps}
-      contentContainerStyle={columnsFlatListProps?.contentContainerStyle}
+      contentContainerStyle={[{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+      }, columnsFlatListProps?.contentContainerStyle || {}]}
       renderItem={({ item }) => {
         return <Column<T>
           ref={{
