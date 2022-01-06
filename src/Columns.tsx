@@ -236,6 +236,9 @@ function Columns<T>({
           generateOnLayout={generateOnLayout}
         />
       }}
+      extraData={{
+        data, numColumns, renderItem, columnFlatListProps, keyExtractor, heightExtractor, asyncHeightExtractor,
+      }}
     />
   )
 }
