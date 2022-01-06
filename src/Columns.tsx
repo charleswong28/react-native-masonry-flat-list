@@ -229,7 +229,11 @@ function Columns<T>({
             current: columnsRef.current[item.index] 
           }}
           key={`item-${item.index}`}
-          data={item.items}
+          data={
+            item.items
+              .map<T | undefined>((thisItem) => data.find((dataItem) => keyExtractor(dataItem) === keyExtractor(thisItem)))
+              .filter<T>((thisItem): thisItem is T => thisItem != null)
+          }
           keyExtractor={keyExtractor}
           renderItem={renderItem}
           columnFlatListProps={columnFlatListProps}
