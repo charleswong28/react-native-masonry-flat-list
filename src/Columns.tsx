@@ -78,7 +78,7 @@ function Columns<T>({
   const previousData = usePrevious<T[]>(data);
   const listRef = useRef<FlatList<ColumnItem<T>> | null>(null);
   const columnsRef = useRef<FlatList<T>[]>([]);
-  const columns = useRef<ColumnItem<T>[]>(generateDefaultItems(numColumns));
+  const [columns, setColumns] = useState<ColumnItem<T>[]>(generateDefaultItems(numColumns));
   const [, forceUpdate] = useState(false);
 
   /* Refactored function for saving columns information */
@@ -104,10 +104,10 @@ function Columns<T>({
     }
 
     /* Sort it according to index for rendering */
-    columns.current = [
-      ...columns.current.filter((thisColumn) => thisColumn.index !== column.index),
+    setColumns((thisColumns) => [
+      ...thisColumns.filter((thisColumn) => thisColumn.index !== column.index),
       clonedColumn,
-    ].sort((itemA, itemB) => itemA.index - itemB.index);
+    ].sort((itemA, itemB) => itemA.index - itemB.index));
   }, []);
 
   /* For both initial item adding and onLayout with height */ 
@@ -115,12 +115,12 @@ function Columns<T>({
     item: T, layoutHeight?: number | undefined,
   }) => {
     const key = keyExtractor(item);
-    let targetColumn = columns.current.find((column) => (column.itemHeights[key] != null));
+    let targetColumn = columns.find((column) => (column.itemHeights[key] != null));
     if (targetColumn == null) {
       /* If item does not exist in any column, targetColumn is the column with minimum height */
-      targetColumn = columns.current.reduce(
+      targetColumn = columns.reduce(
         (min, column) => column.height < min.height ? column : min,
-        columns.current[0],
+        columns[0],
       );
     }
 
@@ -157,7 +157,7 @@ function Columns<T>({
   
       if (dataRemoved.length > 0) {
         /* If data is removed, re-constructure the columns */
-        columns.current = generateDefaultItems(numColumns);
+        setColumns(generateDefaultItems(numColumns));
         await Promise.all(data.map((item) => addItemWithHeight({ item })));
 
         /* Hacky way to delay re-render to prevent force close */
@@ -187,7 +187,7 @@ function Columns<T>({
     },
     scrollToItem: (params) => {
       const key = keyExtractor(params.item);
-      const existingColumn = columns.current.find((column) => column.itemHeights[key]);
+      const existingColumn = columns.find((column) => column.itemHeights[key]);
       if (existingColumn?.index != null && columnsRef.current[existingColumn.index] != null) {
         columnsRef.current[existingColumn.index]?.scrollToItem(params); 
       }
@@ -196,7 +196,7 @@ function Columns<T>({
       listRef?.current?.scrollToOffset(params);
     },
     clear: () => {
-      columns.current = generateDefaultItems(numColumns);
+      setColumns(generateDefaultItems(numColumns));
       forceUpdate((bool) => !bool);
     },
   }));
@@ -213,7 +213,7 @@ function Columns<T>({
   return (
     <FlatList<ColumnItem<T>>
       ref={listRef}
-      data={columns.current}
+      data={columns}
       keyExtractor={columnKeyExtractory}
       onScroll={onScroll}
       onEndReached={onEndReached}
