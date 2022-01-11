@@ -235,7 +235,7 @@ function Columns<T>({
           key={`item-${item.index}`}
           data={
             item.items
-              .map<T | undefined>((thisItem) => dataCache[keyExtractor(thisItem)])
+              .map<T | undefined>((thisItem) => dataCache[keyExtractor(thisItem)] || thisItem)
               .filter<T>((thisItem): thisItem is T => thisItem != null)
           }
           keyExtractor={keyExtractor}
