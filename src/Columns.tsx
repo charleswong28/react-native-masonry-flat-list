@@ -163,7 +163,7 @@ function Columns<T>({
         /* Hacky way to delay re-render to prevent force close */
         setTimeout(() => {
           forceUpdate((bool) => !bool);
-        }, 10);
+        }, 40);
       } else if (dataNotAdded.length > 0) {
         /* If data is changed, clear the result and add item again */
         await Promise.all(dataNotAdded.map((item) => addItemWithHeight({ item })));
@@ -171,7 +171,7 @@ function Columns<T>({
         /* Hacky way to delay re-render to prevent force close */
         setTimeout(() => {
           forceUpdate((bool) => !bool);
-        }, 10);
+        }, 40);
       }
     };
 
