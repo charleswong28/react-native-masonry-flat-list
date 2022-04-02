@@ -1,3 +1,4 @@
+import * as _ from 'lodash';
 import * as React from 'react';
 import {
   ForwardedRef, useState, useMemo, useCallback, useEffect, useImperativeHandle, forwardRef, useRef,
@@ -80,6 +81,7 @@ function Columns<T>({
   const columnsRef = useRef<FlatList<T>[]>([]);
   const columns = useRef<ColumnItem<T>[]>(generateDefaultItems(numColumns));
   const [, forceUpdate] = useState(false);
+  const ids = useMemo(() => data.map(item => keyExtractor(item)), [data]);
 
   /* Refactored function for saving columns information */
   const saveColumnHeight = useCallback(({
@@ -93,11 +95,12 @@ function Columns<T>({
       ...column.itemHeights,
       [key]: height,
     };
+
     const clonedColumn = {
-      items: column.itemHeights[key] != null ? column.items : [
+      items: column.itemHeights[key] != null ? column.items : _.sortBy([
         ...column.items,
         item,
-      ],
+      ], (object: T) => ids.indexOf(keyExtractor(object))),
       itemHeights,
       index: column.index,
       height: Object.values(itemHeights).reduce((sum, thisHeight) => sum + thisHeight, 0),
@@ -108,7 +111,7 @@ function Columns<T>({
       ...columns.current.filter((thisColumn) => thisColumn.index !== column.index),
       clonedColumn,
     ].sort((itemA, itemB) => itemA.index - itemB.index);
-  }, []);
+  }, [ids]);
 
   /* For both initial item adding and onLayout with height */ 
   const addItemWithHeight = useCallback(async ({ item, layoutHeight }: {
@@ -154,7 +157,7 @@ function Columns<T>({
       const currentKeys = data?.map((item) => keyExtractor(item)) || [];
       const dataNotAdded = data?.filter((item) => !previousKeys.includes(keyExtractor(item))) || [];
       const dataRemoved = previousData?.filter((item) => !currentKeys.includes(keyExtractor(item))) || [];
-  
+
       if (dataRemoved.length > 0) {
         /* If data is removed, re-constructure the columns */
         columns.current = generateDefaultItems(numColumns);
@@ -163,7 +166,7 @@ function Columns<T>({
         /* Hacky way to delay re-render to prevent force close */
         setTimeout(() => {
           forceUpdate((bool) => !bool);
-        }, 40);
+        }, 10);
       } else if (dataNotAdded.length > 0) {
         /* If data is changed, clear the result and add item again */
         await Promise.all(dataNotAdded.map((item) => addItemWithHeight({ item })));
@@ -171,7 +174,7 @@ function Columns<T>({
         /* Hacky way to delay re-render to prevent force close */
         setTimeout(() => {
           forceUpdate((bool) => !bool);
-        }, 40);
+        }, 10);
       }
     };
 
